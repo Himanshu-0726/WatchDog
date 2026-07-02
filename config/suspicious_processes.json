@@ -1,0 +1,53 @@
+{
+  "_comment": "SentinelCanary - Suspicious Process Signatures",
+  "_purpose": "DEFENSIVE DETECTION: Identifies unauthorized security tools running on monitored systems",
+  "_note": "This is a defensive security configuration for authorized monitoring only",
+
+  "hacking_tools": [
+    "mimikatz", "mimikatz.exe", "mimikittenz",
+    "lazagne", "lazagne.exe",
+    "keethief", "keethief.exe",
+    "mimipenguin", "mimipenguin.sh",
+    "john", "john.exe", "hashcat", "hashcat.exe",
+    "hydra", "hydra.exe", "medusa", "medusa.exe",
+    "nc", "ncat", "netcat", "socat",
+    "meterpreter", "msfconsole", "msfvenom",
+    "cobaltstrike", "beacon.exe",
+    "empire", "powersploit", "nishang",
+    "bloodhound", "sharphound", "sharpup",
+    "rubeus", "certify", "noPac",
+    "seatbelt", "sharpdpapi", "sharpchrome",
+    "pypykatz"
+  ],
+
+  "analysis_tools": [
+    "wireshark", "wireshark.exe", "tshark",
+    "ida", "ida64", "ida.exe", "ida64.exe",
+    "ollydbg", "ollydbg.exe",
+    "x64dbg", "x64dbg.exe", "x32dbg", "x32dbg.exe",
+    "procmon", "procmon.exe", "processmonitor",
+    "processhacker", "processhacker.exe",
+    "procexp", "procexp.exe", "process explorer",
+    "autoruns", "autoruns.exe",
+    "tcpview", "tcpview.exe",
+    "fiddler", "fiddler.exe",
+    "burpsuite", "burp",
+    "gdb", "lldb", "windbg",
+    "dnspy", "dnspy.exe",
+    "de4dot", "de4dot.exe"
+  ],
+
+  "suspicious_tools": [
+    "psexec", "psexec.exe",
+    "wmiexec", "wmiexec.py",
+    "smbexec", "smbexec.py",
+    "atexec", "atexec.py",
+    "crackmapexec", "cme",
+    "evil-winrm", "evil-winrm.exe",
+    "sharpshares", "sharpshares.exe",
+    "lateralus", "lateralus.exe",
+    "spray", "spray.sh",
+    "adidnsdump", "adidnsdump.exe",
+    "bloodyAD", "bloodyAD.py"
+  ]
+}

@@ -1,0 +1,44 @@
+# Example: Basic Discord Configuration
+# Copy this to config.yaml and update with your values
+
+notifications:
+  discord:
+    enabled: true
+    webhook_url: "https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN"
+  telegram:
+    enabled: false
+    bot_token: ""
+    chat_id: ""
+
+encryption:
+  enabled: false
+  key: ""
+
+logging:
+  enabled: true
+
+geofencing:
+  enabled: false
+  allowed_countries: []
+  blocked_countries: []
+  allowed_ips: []
+  alert_on_unknown_location: true
+
+threat_intel:
+  enabled: false
+  virustotal_api_key: ""
+  abuseipdb_api_key: ""
+
+process_monitor:
+  enabled: true
+
+smtp:
+  enabled: false
+  server: ""
+  port: 587
+  username: ""
+  password: ""
+  from_email: ""
+  to_emails: []
+
+rate_limit: 5
