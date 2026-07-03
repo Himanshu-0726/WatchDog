@@ -48,6 +48,26 @@ pythonw "{SENTINEL_PATH}"
     print(f"[+] Created: {output_path}")
     return output_path
 
+def build_bat_relative(output_name):
+    """Create a BAT canary file using relative path to sentinel.py.
+
+    The BAT file will look for sentinel.py in the same directory tree.
+    Use this when deploying to a different location.
+    """
+    bat_content = r'''@echo off
+REM WatchDog - Security Canary File
+REM This file monitors for unauthorized access.
+REM If you see this message, the canary has been triggered.
+echo WatchDog - Access detected
+timeout /t 2 /nobreak >nul
+pythonw "%~dp0..\sentinel.py"
+'''
+    output_path = os.path.join(SCRIPT_DIR, f'{output_name}.bat')
+    with open(output_path, 'w') as f:
+        f.write(bat_content)
+    print(f"[+] Created (relative path): {output_path}")
+    return output_path
+
 
 def build_ps1(output_name):
     """Create a PS1 canary file that runs sentinel.py when opened.
@@ -120,6 +140,8 @@ def main():
                         help='Generate decoy content file (all content is fake)')
     parser.add_argument('--no-integrity', action='store_true',
                         help='Skip saving integrity hash to config')
+    parser.add_argument('--relative', action='store_true',
+                        help='Use relative path (for deploying to other machines)')
     args = parser.parse_args()
 
     print("=" * 50)
@@ -134,7 +156,10 @@ def main():
 
     canary_path = None
     if args.type in ('bat', 'all'):
-        canary_path = build_bat(args.name)
+        if args.relative:
+            canary_path = build_bat_relative(args.name)
+        else:
+            canary_path = build_bat(args.name)
     if args.type in ('ps1', 'all'):
         canary_path = build_ps1(args.name)
 

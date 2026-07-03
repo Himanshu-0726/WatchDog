@@ -72,11 +72,11 @@ class IncidentManager:
 
         cursor.execute('''
             SELECT incident_id FROM incidents
-            WHERE (source_ip = ? OR hostname = ? OR username = ?)
+            WHERE source_ip = ?
             AND status = 'open'
             AND last_seen > ?
             ORDER BY last_seen DESC LIMIT 1
-        ''', (source_ip, hostname, username, cutoff))
+        ''', (source_ip, cutoff))
 
         row = cursor.fetchone()
 

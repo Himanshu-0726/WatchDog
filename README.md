@@ -38,46 +38,40 @@ WatchDog is a **defensive security tool** that helps you detect unauthorized acc
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/watchdog.git
+git clone https://github.com/Himanshu-0726/WatchDog.git
 cd watchdog
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### Step 2: Configure
+### Step 2: Setup (30 seconds)
 
 ```bash
-# Run the interactive setup wizard
-python installer.py
+# Quick setup - just Discord or Telegram
+python watchdog.py setup
 ```
 
-The wizard will guide you through:
-- Discord/Telegram webhook setup
-- Geofencing configuration
-- Threat intelligence API keys
-- Email report settings
+This asks only:
+1. How do you want to be alerted? (Discord/Telegram/Both)
+2. Paste your webhook URL
 
-### Step 3: Create a Canary
+### Step 3: Deploy
 
 ```bash
-# Create a simple canary file
-python build/build.py --type bat --name passwords
-
-# Create a canary with realistic decoy content
-python build/build.py --type bat --name passwords --decoy passwords
+# Create and deploy to Desktop
+python watchdog.py deploy --location desktop
 ```
 
-### Step 4: Deploy
+That's it! When someone opens the file, you get an alert.
 
-Copy the generated file to where you want to detect access:
+### Other Commands
 
 ```bash
-# Example: Copy to Desktop
-copy build\passwords.bat "%USERPROFILE%\Desktop\passwords.bat"
+python watchdog.py test              # Send test alert
+python watchdog.py status            # View alerts
+python watchdog.py advanced          # Full setup wizard (geofencing, threat intel, etc.)
 ```
-
-### Step 5: Get Alerted
 
 When someone opens the file, you'll receive an alert like:
 
@@ -257,9 +251,10 @@ smtp:
 
 ```
 watchdog/
+├── watchdog.py              # Simple CLI entry point (START HERE)
 ├── sentinel.py              # Main script (runs when canary is opened)
 ├── config.yaml              # Configuration file
-├── installer.py             # Interactive setup wizard
+├── installer.py             # Advanced setup wizard
 ├── build/
 │   └── build.py             # Creates canary files
 ├── config/

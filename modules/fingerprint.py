@@ -7,7 +7,7 @@ import uuid
 import platform
 import subprocess
 import json
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 
 class Fingerprinter:
@@ -275,5 +275,5 @@ class Fingerprinter:
             'geo_details': geo,
             'installed_software_count': len(self.installed_software()),
             'running_process_count': len(self.running_processes()),
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now(timezone(timedelta(hours=5, minutes=30))).isoformat()
         }

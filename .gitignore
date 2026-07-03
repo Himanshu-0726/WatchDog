@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+alerts.db
+build/*.bat
+build/*.txt
