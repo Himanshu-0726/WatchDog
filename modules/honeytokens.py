@@ -6,7 +6,7 @@ alert when used, helping detect credential theft and lateral movement.
 
 import os
 import json
-import hashlib
+import random
 import secrets
 import string
 from datetime import datetime

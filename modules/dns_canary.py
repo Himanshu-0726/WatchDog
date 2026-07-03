@@ -105,7 +105,7 @@ class DNSCanary:
     def check_all_canaries(self):
         """Check all active canaries."""
         results = []
-        for canary_id, canary in self.canaries.items():
+        for canary_id, canary in list(self.canaries.items()):
             if not canary.get('is_triggered'):
                 result = self.check_canary(canary_id)
                 if result:

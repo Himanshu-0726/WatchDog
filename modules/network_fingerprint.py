@@ -4,7 +4,6 @@ Identifies VPN, proxy, Tor exit nodes, and other network anomalies.
 Provides detailed network analysis for threat assessment.
 """
 
-import os
 import socket
 import requests
 from datetime import datetime

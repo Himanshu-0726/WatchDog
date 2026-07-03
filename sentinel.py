@@ -31,7 +31,7 @@ def load_config():
         print("Run 'python installer.py' to set up WatchDog.")
         sys.exit(1)
     with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
+        return yaml.safe_load(f) or {}
 
 
 def get_file_hash(file_path):

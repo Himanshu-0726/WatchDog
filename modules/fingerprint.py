@@ -256,6 +256,7 @@ class Fingerprinter:
             parts = [geo.get('city'), geo.get('region'), geo.get('country')]
             geo_str = ', '.join(p for p in parts if p)
 
+        wifi = self.wifi_info()
         return {
             'hostname': self.hostname(),
             'username': self.username(),
@@ -267,9 +268,9 @@ class Fingerprinter:
             'os_version': platform.version(),
             'machine_type': platform.machine(),
             'processor': platform.processor(),
-            'wifi_ssid': self.wifi_info().get('ssid', 'unknown'),
-            'wifi_bssid': self.wifi_info().get('bssid', 'unknown'),
-            'wifi_signal': self.wifi_info().get('signal', 'unknown'),
+            'wifi_ssid': wifi.get('ssid', 'unknown'),
+            'wifi_bssid': wifi.get('bssid', 'unknown'),
+            'wifi_signal': wifi.get('signal', 'unknown'),
             'geolocation': geo_str,
             'geo_details': geo,
             'installed_software_count': len(self.installed_software()),

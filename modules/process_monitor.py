@@ -9,7 +9,6 @@ Identifies hacking tools, analysis tools, and suspicious activity.
 """
 
 import os
-import sys
 import json
 import psutil
 from datetime import datetime

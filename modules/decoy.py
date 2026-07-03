@@ -8,7 +8,6 @@ security monitoring. No real credentials or personal data are generated.
 import os
 import random
 import string
-import json
 
 
 class DecoyGenerator:

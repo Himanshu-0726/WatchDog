@@ -129,13 +129,13 @@ class IncidentManager:
         if row:
             count = row[0]
             if count >= 10:
-                severity = 'critical'
-            elif count >= 5:
-                severity = 'high'
-            elif count >= 2:
-                severity = 'medium'
-            else:
                 severity = 'low'
+            elif count >= 5:
+                severity = 'medium'
+            elif count >= 2:
+                severity = 'high'
+            else:
+                severity = 'critical'
 
             cursor.execute('''
                 UPDATE incidents SET severity = ?, updated_at = ?
@@ -148,7 +148,8 @@ class IncidentManager:
         cursor = conn.cursor()
 
         cursor.execute('SELECT * FROM incidents WHERE incident_id = ?', (incident_id,))
-        incident = dict(cursor.fetchone()) if cursor.fetchone() else None
+        row = cursor.fetchone()
+        incident = dict(row) if row else None
 
         if incident:
             cursor.execute('''
