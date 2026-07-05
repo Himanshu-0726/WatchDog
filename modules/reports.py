@@ -5,6 +5,7 @@ of all canary activity and security events.
 """
 
 import os
+import html as html_module
 import sqlite3
 import smtplib
 from email.mime.text import MIMEText
@@ -191,7 +192,9 @@ class ReportGenerator:
         <tr><th>IP Address</th><th>Alert Count</th></tr>
 """
             for item in report['top_ips']:
-                html += f"        <tr><td>{item['public_ip']}</td><td>{item['count']}</td></tr>\n"
+                ip = html_module.escape(str(item['public_ip']))
+                count = html_module.escape(str(item['count']))
+                html += f"        <tr><td>{ip}</td><td>{count}</td></tr>\n"
             html += "    </table>\n"
 
         if report.get('recent_alerts'):
@@ -201,7 +204,11 @@ class ReportGenerator:
         <tr><th>Time</th><th>User</th><th>Host</th><th>IP</th></tr>
 """
             for alert in report['recent_alerts'][:10]:
-                html += f"        <tr><td>{alert['timestamp']}</td><td>{alert['username']}</td><td>{alert['hostname']}</td><td>{alert['public_ip']}</td></tr>\n"
+                ts = html_module.escape(str(alert['timestamp']))
+                user = html_module.escape(str(alert['username']))
+                host = html_module.escape(str(alert['hostname']))
+                ip = html_module.escape(str(alert['public_ip']))
+                html += f"        <tr><td>{ts}</td><td>{user}</td><td>{host}</td><td>{ip}</td></tr>\n"
             html += "    </table>\n"
 
         html += """

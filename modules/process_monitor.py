@@ -51,11 +51,19 @@ class ProcessMonitor:
             try:
                 with open(config_path, 'r') as f:
                     data = json.load(f)
-                    return {
-                        'hacking_tools': data.get('hacking_tools', []),
-                        'analysis_tools': data.get('analysis_tools', []),
-                        'suspicious_tools': data.get('suspicious_tools', [])
-                    }
+                    # Validate structure: only known keys, values must be lists of strings
+                    valid_keys = {'hacking_tools', 'analysis_tools', 'suspicious_tools'}
+                    result = {}
+                    for key, value in data.items():
+                        if key in valid_keys and isinstance(value, list):
+                            result[key] = [str(v) for v in value if isinstance(v, (str, int))]
+                        else:
+                            result[key] = default_signatures.get(key, [])
+                    # Ensure all expected keys exist
+                    for key in valid_keys:
+                        if key not in result:
+                            result[key] = []
+                    return result
             except Exception:
                 return default_signatures
 

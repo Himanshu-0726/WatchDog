@@ -129,13 +129,13 @@ class IncidentManager:
         if row:
             count = row[0]
             if count >= 10:
-                severity = 'low'
-            elif count >= 5:
-                severity = 'medium'
-            elif count >= 2:
-                severity = 'high'
-            else:
                 severity = 'critical'
+            elif count >= 5:
+                severity = 'high'
+            elif count >= 2:
+                severity = 'medium'
+            else:
+                severity = 'low'
 
             cursor.execute('''
                 UPDATE incidents SET severity = ?, updated_at = ?

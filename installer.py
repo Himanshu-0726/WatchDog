@@ -3,6 +3,7 @@
 import os
 import sys
 import yaml
+import requests
 
 
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.yaml')
@@ -21,12 +22,47 @@ def save_config(config):
     print(f"[+] Config saved to {CONFIG_PATH}")
 
 
+def validate_webhook(url):
+    """Validate a Discord webhook by fetching its metadata. Returns (ok, message)."""
+    if not url:
+        return False, "No webhook URL provided"
+    try:
+        resp = requests.get(url, timeout=10)
+        if resp.status_code == 200:
+            data = resp.json()
+            if data.get('id') and data.get('token'):
+                channel = data.get('channel_id', 'unknown')
+                name = data.get('name', 'unnamed')
+                return True, f"Valid webhook '{name}' (channel {channel})"
+        return False, f"Webhook invalid or deleted (HTTP {resp.status_code})"
+    except requests.exceptions.ConnectionError:
+        return False, "Could not connect to Discord"
+    except Exception as e:
+        return False, f"Validation failed: {e}"
+
+
 def setup_discord(config):
     print("\n--- Discord Notifications ---")
     enabled = input("Enable Discord alerts? (y/n): ").strip().lower() == 'y'
     config.setdefault('notifications', {})['discord'] = {'enabled': enabled}
     if enabled:
         webhook = input("Discord webhook URL: ").strip()
+        if webhook:
+            print("[*] Validating webhook...")
+            ok, msg = validate_webhook(webhook)
+            if ok:
+                print(f"[+] {msg}")
+            else:
+                print(f"[!] WARNING: {msg}")
+                retry = input("    Use this URL anyway? (y/n): ").strip().lower()
+                if retry != 'y':
+                    webhook = input("    Enter a new webhook URL (or leave blank to skip): ").strip()
+                    if webhook:
+                        ok2, msg2 = validate_webhook(webhook)
+                        if ok2:
+                            print(f"[+] {msg2}")
+                        else:
+                            print(f"[!] WARNING: {msg2}")
         config['notifications']['discord']['webhook_url'] = webhook
     return config
 
@@ -45,9 +81,10 @@ def setup_telegram(config):
 
 def setup_encryption(config):
     print("\n--- Encryption ---")
-    enabled = input("Enable encryption for alert data? (y/n): ").strip().lower() == 'y'
-    config.setdefault('encryption', {})['enabled'] = enabled
-    if enabled:
+    print("Encrypts PII (hostname, IP, WiFi, etc.) before sending alerts.")
+    enabled = input("Enable encryption? (Y/n): ").strip().lower()
+    config.setdefault('encryption', {})['enabled'] = enabled != 'n'
+    if config['encryption']['enabled']:
         key = input("Encryption key (leave blank to auto-generate): ").strip()
         config['encryption']['key'] = key
     return config
@@ -134,9 +171,29 @@ def test_notifications(config):
     if test:
         from modules.notifier import Notifier
         notifier = Notifier(config)
+
+        # Pre-check webhook health
+        discord_cfg = config.get('notifications', {}).get('discord', {})
+        if discord_cfg.get('enabled') and discord_cfg.get('webhook_url'):
+            print("[*] Checking Discord webhook health...")
+            ok, msg = validate_webhook(discord_cfg['webhook_url'])
+            if ok:
+                print(f"[+] {msg}")
+            else:
+                print(f"[!] {msg}")
+                print("    Go to Discord > Server Settings > Webhooks to create a new one.")
+
         results = notifier.test_notification()
         for channel, result in results.items():
-            print(f"  {channel}: {result.get('status', 'unknown')}")
+            status = result.get('status', 'unknown')
+            if status == 'sent':
+                print(f"  [+] {channel}: sent successfully")
+            elif status == 'webhook_dead':
+                print(f"  [!] {channel}: webhook is dead — regenerate it in Discord settings")
+            elif status == 'no_webhook':
+                print(f"  [-] {channel}: no webhook URL configured")
+            else:
+                print(f"  [-] {channel}: {status} — {result}")
 
 
 def view_alerts():

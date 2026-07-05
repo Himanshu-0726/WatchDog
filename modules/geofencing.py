@@ -27,7 +27,7 @@ class Geofencer:
             return self._cache[ip]
 
         try:
-            resp = requests.get(f'http://ip-api.com/json/{ip}', timeout=10)
+            resp = requests.get(f'https://ip-api.com/json/{ip}', timeout=10)
             data = resp.json()
             if data.get('status') == 'success':
                 location = {

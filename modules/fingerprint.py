@@ -68,7 +68,7 @@ class Fingerprinter:
 
         try:
             r = self._load_requests()
-            resp = r.get(f'http://ip-api.com/json/{ip}', timeout=10)
+            resp = r.get(f'https://ip-api.com/json/{ip}', timeout=10)
             data = resp.json()
             if data.get('status') == 'success':
                 return {

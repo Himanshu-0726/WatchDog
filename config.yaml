@@ -1,5 +1,5 @@
 encryption:
-  enabled: false
+  enabled: true
   key: ''
 geofencing:
   alert_on_unknown_location: true

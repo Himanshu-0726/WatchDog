@@ -24,14 +24,40 @@ from modules.network_fingerprint import NetworkFingerprint
 from modules.dns_canary import DNSCanary
 
 
+ENV_OVERRIDES = {
+    'WATCHDOG_DISCORD_WEBHOOK_URL': ('notifications', 'discord', 'webhook_url'),
+    'WATCHDOG_TELEGRAM_BOT_TOKEN': ('notifications', 'telegram', 'bot_token'),
+    'WATCHDOG_TELEGRAM_CHAT_ID': ('notifications', 'telegram', 'chat_id'),
+    'WATCHDOG_SMTP_PASSWORD': ('smtp', 'password'),
+    'WATCHDOG_ENCRYPTION_KEY': ('encryption', 'key'),
+    'WATCHDOG_ABUSEIPDB_API_KEY': ('threat_intel', 'abuseipdb_api_key'),
+    'WATCHDOG_VIRUSTOTAL_API_KEY': ('threat_intel', 'virustotal_api_key'),
+}
+
+
+def _set_nested(d, keys, value):
+    for k in keys[:-1]:
+        d = d.setdefault(k, {})
+    d[keys[-1]] = value
+
+
 def load_config():
     config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.yaml')
     if not os.path.exists(config_path):
         print(f"Config not found: {config_path}")
+        print("Copy config.example.yaml to config.yaml and fill in your settings.")
         print("Run 'python installer.py' to set up WatchDog.")
         sys.exit(1)
     with open(config_path, 'r') as f:
-        return yaml.safe_load(f) or {}
+        config = yaml.safe_load(f) or {}
+    
+    # Override sensitive values from environment variables
+    for env_var, key_path in ENV_OVERRIDES.items():
+        env_value = os.environ.get(env_var)
+        if env_value:
+            _set_nested(config, key_path, env_value)
+    
+    return config
 
 
 def get_file_hash(file_path):
@@ -137,10 +163,27 @@ def run_sentinel():
         if not key:
             encryptor = Encryptor()
             key = encryptor.get_key()
+            # Persist auto-generated key so encrypted alerts can be decrypted later
+            key_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.encryption_key')
+            if not os.path.exists(key_path):
+                encryptor.save_key(key_path)
+                print(f"[+] Auto-generated encryption key saved to {key_path}")
         else:
             encryptor = Encryptor(key)
+        
+        # Collect sensitive PII fields to encrypt
+        pii_fields = [
+            'hostname', 'username', 'public_ip', 'private_ip', 'mac_address',
+            'os_system', 'os_release', 'os_version', 'machine_type', 'processor',
+            'wifi_ssid', 'wifi_bssid', 'wifi_signal', 'geolocation', 'geo_details',
+            'installed_software_count', 'running_process_count'
+        ]
+        pii_data = {k: data.pop(k) for k in list(data.keys()) if k in pii_fields}
+        pii_data['timestamp'] = data.get('timestamp', '')
+        
+        # Encrypt and replace plaintext with encrypted payload
         data['encrypted'] = True
-        data['_encrypted_payload'] = encryptor.encrypt_dict(data)
+        data['encrypted_payload'] = encryptor.encrypt_dict(pii_data)
 
     print("[*] Logging alert locally...")
     logger = Logger()

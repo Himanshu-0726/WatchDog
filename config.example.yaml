@@ -1,0 +1,56 @@
+# WatchDog Configuration
+# Copy this file to config.yaml and fill in your values.
+# Never commit config.yaml to version control.
+# Sensitive values can also be loaded from environment variables:
+#   WATCHDOG_DISCORD_WEBHOOK_URL, WATCHDOG_TELEGRAM_BOT_TOKEN,
+#   WATCHDOG_TELEGRAM_CHAT_ID, WATCHDOG_SMTP_PASSWORD,
+#   WATCHDOG_ENCRYPTION_KEY, WATCHDOG_ABUSEIPDB_API_KEY,
+#   WATCHDOG_VIRUSTOTAL_API_KEY
+
+encryption:
+  enabled: true
+  key: ''  # Or set WATCHDOG_ENCRYPTION_KEY env var
+
+geofencing:
+  alert_on_unknown_location: true
+  allowed_countries: []
+  allowed_ips: []
+  blocked_countries: []
+  enabled: false
+
+integrity:
+  canary_name: passwords
+  canary_path: /path/to/your/canary_file
+  enabled: true
+  file_hash: ''  # SHA-256 hash of your canary file
+
+logging:
+  enabled: true
+
+notifications:
+  discord:
+    enabled: true
+    webhook_url: ''  # Or set WATCHDOG_DISCORD_WEBHOOK_URL env var
+  telegram:
+    bot_token: ''  # Or set WATCHDOG_TELEGRAM_BOT_TOKEN env var
+    chat_id: ''    # Or set WATCHDOG_TELEGRAM_CHAT_ID env var
+    enabled: false
+
+process_monitor:
+  enabled: true
+
+rate_limit: 5
+
+smtp:
+  enabled: false
+  from_email: ''
+  password: ''    # Or set WATCHDOG_SMTP_PASSWORD env var
+  port: 587
+  server: ''
+  to_emails: []
+  username: ''
+
+threat_intel:
+  abuseipdb_api_key: ''   # Or set WATCHDOG_ABUSEIPDB_API_KEY env var
+  enabled: false
+  virustotal_api_key: ''  # Or set WATCHDOG_VIRUSTOTAL_API_KEY env var
